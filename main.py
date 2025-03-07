@@ -6,16 +6,19 @@ import os
 
 def load_high_scores(filename="high_scores.json"):
     if os.path.exists(filename):
-        with open(filename, "r", encoding="utf-8") as file:
+        with open(filename, "r") as file:
             return json.load(file)
     return {}
 
 def save_high_scores(scores, filename="high_scores.json"):
-    with open(filename, "w", encoding="utf-8") as file:
-        json.dump(scores, file, indent=4, ensure_ascii=False)
+    with open(filename, "w") as file:
+        json.dump(scores, file, indent=4, )
 
 def get_player_name():
-    return input('Введите nickname:')
+    return input('Введите nickname: ')
+
+def get_mode():
+    return int(input('Выберите режим: 1 - easy, 2 - mormal , 3 - hard\n'))
 
 def update_high_score(player_name, scores, filename="high_scores.json"):
     scores = load_high_scores(filename)
@@ -24,6 +27,7 @@ def update_high_score(player_name, scores, filename="high_scores.json"):
         save_high_scores(scores,filename)
 
 player_name = get_player_name()
+mode = get_mode()
 score = 0
 high_scores = load_high_scores()
 high_score = high_scores.get(player_name,0)
@@ -136,15 +140,18 @@ while True:
         x = random.randint(-900, 900)
         y = random.randint(-400, 450)
         food.goto(x, y)
-
         new_segment = turtle.Turtle()
         new_segment.speed(0)
         new_segment.shape("square")
         new_segment.color("green")
         new_segment.penup()
         segments.append(new_segment)
-        delay -= 0.001
         score += 1
+        if score % 5 == 0:
+            if mode == 2 and delay>=0.06:
+                delay-= 0.01
+            if mode == 3 and delay >= 0.04:
+                delay-= 0.01
         if score > high_score:
             high_score = score
         update_score()
@@ -162,8 +169,6 @@ while True:
             time.sleep(1)
             head.goto(0, 0)
             head.direction = "stop"
-            colors = random.choice(['red', 'blue', 'green'])
-            shapes = random.choice(['square', 'circle'])
             for segment in segments:
                 segment.goto(1000, 1000)
             segments.clear()
